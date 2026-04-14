@@ -1,0 +1,699 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BOYS' LOCKER ROOM</title>
+    <link href="https://fonts.googleapis.com/css2?family=Permanent+Marker&family=Outfit:wght@400;700;900&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; cursor: none; }
+
+        body {
+            background: #1a0a00;
+            font-family: 'Outfit', sans-serif;
+            overflow: hidden;
+            height: 100vh;
+        }
+
+        /* CUSTOM CURSOR */
+        #cursor {
+            position: fixed; width: 16px; height: 16px;
+            border: 2px solid #fff; border-radius: 50%;
+            pointer-events: none; z-index: 9999;
+            transition: transform 0.1s;
+            mix-blend-mode: difference;
+        }
+        #cursor-dot {
+            position: fixed; width: 6px; height: 6px;
+            background: #ff4d00; border-radius: 50%;
+            pointer-events: none; z-index: 10000;
+        }
+
+        /* ============================================
+           THE SCENE — LOCKER ROOM BAR
+        ============================================ */
+        .scene {
+            width: 100vw;
+            height: 100vh;
+            position: relative;
+            overflow: hidden;
+            /* Brick wall background */
+            background:
+                repeating-linear-gradient(
+                    180deg,
+                    transparent 0px, transparent 28px,
+                    rgba(0,0,0,0.3) 28px, rgba(0,0,0,0.3) 32px
+                ),
+                repeating-linear-gradient(
+                    90deg,
+                    transparent 0px, transparent 58px,
+                    rgba(0,0,0,0.2) 58px, rgba(0,0,0,0.2) 62px
+                ),
+                linear-gradient(180deg, #3d1c08 0%, #5c2c0e 40%, #4a1f08 100%);
+        }
+
+        /* Warm amber ambient lighting from ceiling */
+        .scene::before {
+            content: "";
+            position: absolute;
+            top: 0; left: 0; right: 0; height: 60%;
+            background: radial-gradient(ellipse at 60% 0%, rgba(255, 160, 30, 0.3) 0%, transparent 70%);
+            pointer-events: none; z-index: 1;
+        }
+
+        /* Dark vignette edges */
+        .scene::after {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(ellipse at 50% 50%, transparent 40%, rgba(0,0,0,0.6) 100%);
+            pointer-events: none; z-index: 1;
+        }
+
+        /* ============ NEON SIGN ============ */
+        .neon-sign {
+            position: absolute;
+            top: 30px; left: 50%; transform: translateX(-50%);
+            z-index: 10;
+            text-align: center;
+            background: rgba(0,0,0,0.4);
+            border: 3px solid rgba(255,255,255,0.1);
+            border-radius: 15px;
+            padding: 10px 40px;
+        }
+
+        .neon-boys {
+            font-family: 'Permanent Marker', cursive;
+            font-size: 3.5rem;
+            color: #fff;
+            text-shadow:
+                0 0 5px #ff3c3c,
+                0 0 10px #ff3c3c,
+                0 0 30px #ff3c3c,
+                0 0 60px #ff3c3c;
+            animation: neonFlicker 3s infinite;
+        }
+
+        .neon-room {
+            font-family: 'Permanent Marker', cursive;
+            font-size: 2.8rem;
+            color: #fff;
+            text-shadow:
+                0 0 5px #00f2ff,
+                0 0 10px #00f2ff,
+                0 0 30px #00f2ff,
+                0 0 60px #00f2ff;
+            background: rgba(0, 100, 180, 0.4);
+            padding: 0 20px;
+            border-radius: 8px;
+            animation: neonFlicker 2.5s 0.5s infinite;
+        }
+
+        @keyframes neonFlicker {
+            0%, 19%, 21%, 23%, 25%, 54%, 56%, 100% { opacity: 1; }
+            20%, 22%, 24%, 55% { opacity: 0.7; }
+        }
+
+        /* ============ LANTERN ============ */
+        .lantern {
+            position: absolute;
+            top: 20px; right: 260px;
+            width: 40px; height: 55px;
+            z-index: 10;
+        }
+        .lantern-body {
+            width: 40px; height: 50px;
+            background: radial-gradient(circle at 50% 30%, #ffcc44, #cc7700);
+            border-radius: 50% 50% 40% 40%;
+            box-shadow: 0 0 20px rgba(255, 180, 0, 0.8), 0 0 60px rgba(255, 140, 0, 0.4);
+            animation: lanternSway 3s infinite ease-in-out;
+        }
+        @keyframes lanternSway {
+            0%, 100% { transform: rotate(-5deg); }
+            50% { transform: rotate(5deg); }
+        }
+
+        /* ============ BOTTLE SHELF ============ */
+        .shelf {
+            position: absolute;
+            top: 100px; right: 30px;
+            width: 180px; z-index: 5;
+        }
+        .shelf-plank {
+            height: 8px; background: linear-gradient(#8b5e3c, #5d3a1a);
+            margin-bottom: 60px; box-shadow: 0 4px 8px rgba(0,0,0,0.5);
+        }
+        .bottles {
+            display: flex; gap: 8px; margin-bottom: 5px;
+        }
+        .bottle {
+            width: 18px;
+            height: 50px;
+            border-radius: 3px 3px 6px 6px;
+            position: relative;
+            animation: bottleGlow 2s infinite alternate;
+        }
+        .bottle::before {
+            content: "";
+            position: absolute; top: -10px; left: 4px;
+            width: 10px; height: 12px;
+            background: inherit; border-radius: 2px 2px 0 0;
+        }
+        @keyframes bottleGlow { from { filter: brightness(1); } to { filter: brightness(1.3); } }
+
+        /* ============ LEFT SCREEN / DARTBOARD ============ */
+        .left-screen {
+            position: absolute;
+            top: 100px; left: 30px;
+            width: 160px; height: 120px;
+            background: linear-gradient(135deg, #0a0020, #000033);
+            border: 4px solid #333;
+            border-radius: 5px;
+            box-shadow: 0 0 20px rgba(100, 100, 255, 0.3);
+            z-index: 5;
+            display: flex; align-items: center; justify-content: center;
+        }
+
+        .dartboard {
+            width: 90px; height: 90px;
+            border-radius: 50%;
+            background:
+                radial-gradient(circle, #cc0000 15%, #000 15%, #000 25%, #cc0000 25%, #cc0000 35%, #000 35%, #000 45%, #cc0000 45%, #cc0000 55%, #000 55%, #000 65%, #cc0000 65%, #cc0000 75%, #000 75%, #000 85%, #cc0000 85%);
+            animation: dartSpin 10s linear infinite;
+        }
+        @keyframes dartSpin { from { transform: rotate(0); } to { transform: rotate(360deg); } }
+
+        /* ============ BASKETBALL HOOP (RIGHT WALL) ============ */
+        .hoop-container {
+            position: absolute;
+            top: 60px; right: 30px;
+            z-index: 6;
+        }
+        .backboard {
+            width: 100px; height: 70px;
+            border: 4px solid #fff;
+            background: rgba(255,255,255,0.05);
+        }
+        .backboard::before {
+            content: "";
+            position: absolute;
+            bottom: -2px; left: 50%; transform: translateX(-50%);
+            width: 50px; height: 30px;
+            border: 2px solid #fff; border-bottom: none;
+        }
+        .rim {
+            width: 60px; height: 8px;
+            background: #e67e22;
+            margin: 0 auto;
+            border-radius: 4px;
+            box-shadow: 0 0 10px #e67e22;
+        }
+        .net {
+            width: 50px; height: 40px;
+            margin: 0 auto;
+            border: 2px dashed rgba(255,255,255,0.5);
+            border-top: none;
+            border-radius: 0 0 50% 50%;
+        }
+
+        /* ============ CHARACTERS TABLE AREA ============ */
+        .characters-area {
+            position: absolute;
+            bottom: 200px; left: 0; right: 0;
+            display: flex;
+            justify-content: center;
+            align-items: flex-end;
+            gap: 0px;
+            z-index: 20;
+            padding: 0 20px;
+        }
+
+        /* Each character wrapper */
+        .guy {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            position: relative;
+            transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .guy:hover {
+            transform: scale(1.08) translateY(-15px);
+            z-index: 50;
+        }
+
+        /* Character face + hair + body drawn in CSS */
+        .guy-body {
+            position: relative;
+            width: 100px;
+        }
+
+        .face {
+            width: 60px; height: 65px;
+            border-radius: 50%;
+            margin: 0 auto;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .hair-base {
+            position: absolute; top: -15px; left: -5px; width: 70px;
+            height: 40px; border-radius: 50% 50% 0 0;
+        }
+
+        .eye { width: 8px; height: 8px; background: #222; border-radius: 50%; position: absolute; top: 28px; }
+        .eye.left { left: 14px; }
+        .eye.right { right: 14px; }
+
+        .smile {
+            position: absolute; bottom: 12px; left: 50%; transform: translateX(-50%);
+            width: 24px; height: 12px;
+            border: 3px solid #333; border-top: none;
+            border-radius: 0 0 12px 12px;
+        }
+
+        .shirt {
+            width: 80px; height: 80px;
+            margin: -10px auto 0;
+            border-radius: 10px 10px 15px 15px;
+            position: relative;
+        }
+
+        .shirt::before {
+            content: "";
+            position: absolute; top: 0; left: 50%; transform: translateX(-50%);
+            width: 30px; height: 25px;
+            border-radius: 0 0 50% 50%;
+            background: rgba(255,255,255,0.2);
+        }
+
+        .glasses {
+            position: absolute;
+            top: 26px; left: 6px;
+            display: flex; gap: 4px;
+        }
+        .glasses::before, .glasses::after {
+            content: "";
+            width: 18px; height: 12px;
+            border: 2px solid #333; border-radius: 3px;
+            background: rgba(100,180,255,0.2);
+        }
+
+        .guy-label {
+            font-family: 'Permanent Marker', cursive;
+            font-size: 0.9rem;
+            color: #f1c40f;
+            text-shadow: 1px 1px 0 #000;
+            margin-top: 8px;
+            text-align: center;
+        }
+
+        /* Props in characters' hands */
+        .prop {
+            position: absolute;
+            font-size: 2rem;
+            animation: propFloat 2s infinite ease-in-out;
+        }
+        @keyframes propFloat { 0%, 100% { transform: translateY(0) rotate(0deg); } 50% { transform: translateY(-5px) rotate(5deg); } }
+
+        /* ============ TABLE / BAR TOP ============ */
+        .bar-table {
+            position: absolute;
+            bottom: 160px; left: 0; right: 0;
+            height: 60px;
+            background: linear-gradient(180deg, #8b5e3c, #5d3a1a);
+            border-top: 5px solid #a0724a;
+            z-index: 15;
+        }
+
+        /* Items on the bar table */
+        .table-items {
+            position: absolute;
+            bottom: 195px; left: 0; right: 0;
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            z-index: 18;
+            align-items: flex-end;
+        }
+
+        .beer-mug {
+            width: 60px; height: 80px;
+            background: linear-gradient(180deg, rgba(255,220,100,0.9), rgba(200,150,0,0.9));
+            border-radius: 5px 5px 10px 10px;
+            border: 3px solid #888;
+            position: relative;
+            animation: beerSlosh 3s infinite ease-in-out;
+        }
+
+        .beer-mug::before {
+            content: "";
+            position: absolute; top: 0; left: 0; right: 0; height: 20px;
+            background: rgba(255,255,255,0.7);
+            border-radius: 3px 3px 50% 50%;
+        }
+        .beer-mug::after {
+            content: "";
+            position: absolute; right: -15px; top: 15px;
+            width: 15px; height: 35px;
+            border: 3px solid #888; border-left: none;
+            border-radius: 0 8px 8px 0;
+        }
+        @keyframes beerSlosh { 0%, 100% { transform: rotate(0deg); } 50% { transform: rotate(-3deg); } }
+
+        .shot-glass {
+            width: 25px; height: 35px;
+            background: rgba(200, 150, 50, 0.6);
+            border: 2px solid #aaa;
+            border-radius: 2px 2px 5px 5px;
+        }
+
+        .poker-chips {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .chip {
+            width: 40px; height: 12px;
+            border-radius: 50%;
+            margin-top: -6px;
+            border: 2px solid rgba(255,255,255,0.3);
+        }
+
+        /* ============ POOL TABLE ============ */
+        .pool-area {
+            position: absolute;
+            bottom: 0; left: 0;
+            width: 420px; height: 220px;
+            z-index: 12;
+        }
+
+        .pool-table {
+            width: 380px; height: 200px;
+            background: #1a7a3c;
+            border: 20px solid #5d3a1a;
+            border-radius: 12px;
+            position: relative;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.8);
+        }
+
+        .pool-rail {
+            position: absolute; inset: -8px;
+            background: transparent;
+        }
+
+        /* Pool pockets */
+        .pocket {
+            width: 24px; height: 24px;
+            background: #000; border-radius: 50%;
+            position: absolute;
+        }
+
+        /* Pool balls */
+        .pball {
+            width: 28px; height: 28px;
+            border-radius: 50%;
+            position: absolute;
+            box-shadow: inset -4px -4px 8px rgba(0,0,0,0.5), 3px 3px 6px rgba(0,0,0,0.5);
+            transition: transform 0.5s;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 0.7rem; font-weight: bold; color: white;
+        }
+
+        .pool-cue {
+            position: absolute;
+            width: 8px; height: 220px;
+            background: linear-gradient(#d4a05a, #8b5e3c, #4a2c0a);
+            border-radius: 4px;
+            bottom: -20px; left: 80px;
+            transform: rotate(-30deg);
+            transform-origin: bottom center;
+        }
+
+        /* ============ FLOATING PARTICLES ============ */
+        .particle {
+            position: absolute;
+            width: 4px; height: 4px;
+            background: rgba(255, 150, 50, 0.6);
+            border-radius: 50%;
+            animation: float 6s infinite linear;
+        }
+        @keyframes float {
+            0% { transform: translateY(0) translateX(0); opacity: 0; }
+            10% { opacity: 1; }
+            90% { opacity: 1; }
+            100% { transform: translateY(-200px) translateX(30px); opacity: 0; }
+        }
+
+        /* ============ TOOLTIP BIO ============ */
+        .tooltip {
+            position: absolute;
+            bottom: 120%; left: 50%; transform: translateX(-50%);
+            background: rgba(0,0,0,0.9); border: 1px solid rgba(255,77,0,0.5);
+            padding: 12px 18px; border-radius: 10px;
+            font-size: 0.85rem; width: 180px; text-align: center;
+            opacity: 0; transition: 0.3s; pointer-events: none;
+            color: #fff; line-height: 1.4;
+        }
+        .tooltip::after {
+            content: ""; position: absolute; top: 100%; left: 50%; transform: translateX(-50%);
+            border: 8px solid transparent; border-top-color: rgba(0,0,0,0.9);
+        }
+        .guy:hover .tooltip { opacity: 1; }
+
+    </style>
+</head>
+<body>
+
+<div id="cursor"></div>
+<div id="cursor-dot"></div>
+
+<div class="scene">
+
+    <!-- NEON SIGN -->
+    <div class="neon-sign">
+        <div class="neon-boys">BOYS' LOCKER</div>
+        <div class="neon-room">ROOM</div>
+    </div>
+
+    <!-- LANTERN -->
+    <div class="lantern">
+        <div class="lantern-body"></div>
+    </div>
+
+    <!-- LEFT: DARTBOARD / SCREEN -->
+    <div class="left-screen">
+        <div class="dartboard"></div>
+    </div>
+
+    <!-- RIGHT: BOTTLE SHELF -->
+    <div class="shelf">
+        <div class="bottles">
+            <div class="bottle" style="background: linear-gradient(#8b0000, #500); height: 55px;"></div>
+            <div class="bottle" style="background: linear-gradient(#006400, #003200); height: 60px;"></div>
+            <div class="bottle" style="background: linear-gradient(#b8860b, #8b6914); height: 50px;"></div>
+            <div class="bottle" style="background: linear-gradient(#00008b, #000050); height: 62px;"></div>
+            <div class="bottle" style="background: linear-gradient(#4b0082, #1a0030); height: 48px;"></div>
+        </div>
+        <div class="shelf-plank"></div>
+        <div class="bottles">
+            <div class="bottle" style="background: linear-gradient(#cc7722, #885511); height: 45px;"></div>
+            <div class="bottle" style="background: linear-gradient(#2e8b57, #165533); height: 55px;"></div>
+            <div class="bottle" style="background: linear-gradient(#8b0000, #550000); height: 50px;"></div>
+        </div>
+        <div class="shelf-plank"></div>
+    </div>
+
+    <!-- RIGHT: BASKETBALL HOOP -->
+    <div class="hoop-container">
+        <div class="backboard"></div>
+        <div class="rim"></div>
+        <div class="net"></div>
+    </div>
+
+    <!-- PARTICLES -->
+    <div class="particle" style="left: 30%; bottom: 200px; animation-delay: 0s;"></div>
+    <div class="particle" style="left: 50%; bottom: 200px; animation-delay: 1s;"></div>
+    <div class="particle" style="left: 70%; bottom: 200px; animation-delay: 2s;"></div>
+    <div class="particle" style="left: 40%; bottom: 250px; animation-delay: 0.5s;"></div>
+
+    <!-- BAR TABLE -->
+    <div class="bar-table"></div>
+
+    <!-- TABLE ITEMS -->
+    <div class="table-items">
+        <!-- Beer Mug left -->
+        <div class="beer-mug"></div>
+
+        <!-- Poker chips center -->
+        <div class="poker-chips">
+            <div class="chip" style="background:#e74c3c;"></div>
+            <div class="chip" style="background:#3498db;"></div>
+            <div class="chip" style="background:#2ecc71;"></div>
+            <div class="chip" style="background:#f1c40f;"></div>
+        </div>
+
+        <!-- Shot glasses -->
+        <div style="display:flex; gap:8px; align-items:flex-end;">
+            <div class="shot-glass"></div>
+            <div class="shot-glass" style="height:30px;"></div>
+            <div class="shot-glass"></div>
+        </div>
+
+        <!-- Red cup -->
+        <div style="width:35px; height:45px; background:#c0392b; border-radius:3px 3px 8px 8px; border-top: 6px solid #e74c3c;"></div>
+    </div>
+
+    <!-- CHARACTERS -->
+    <div class="characters-area">
+
+        <!-- GUY 1 - TANAY (left, glasses, curly hair) -->
+        <div class="guy" style="margin-right: -10px;">
+            <div class="tooltip">TANAY<br><span style="color:#ff4d00;">The Architect 👑</span><br>Built this. Owns this.</div>
+            <div class="guy-body">
+                <div class="face" style="background: radial-gradient(circle at 40% 35%, #f5c070, #d4943a);">
+                    <div class="hair-base" style="background: #2c1a08;"></div>
+                    <div class="glasses"></div>
+                    <div class="eye left"></div>
+                    <div class="eye right"></div>
+                    <div class="smile"></div>
+                </div>
+                <div class="shirt" style="background: linear-gradient(180deg, #2c5282, #1a365d);"></div>
+                <div class="prop" style="bottom: 60px; left: -15px; animation-delay: 0s;">🍺</div>
+            </div>
+            <div class="guy-label">TANAY</div>
+        </div>
+
+        <!-- GUY 2 - ABHINAV (yellow floral shirt, glasses, controller) -->
+        <div class="guy" style="margin-right: -5px; z-index: 3;">
+            <div class="tooltip">ABHINAV<br><span style="color:#ff4d00;">Chaos Agent 🔥</span><br>Controller in hand, mayhem in soul.</div>
+            <div class="guy-body">
+                <div class="face" style="background: radial-gradient(circle at 40% 35%, #f5c070, #d4943a); height: 70px;">
+                    <div class="hair-base" style="background: #1a0f02; border-radius: 50% 50% 30% 30%;"></div>
+                    <div class="glasses"></div>
+                    <div class="eye left"></div>
+                    <div class="eye right"></div>
+                    <div class="smile"></div>
+                </div>
+                <div class="shirt" style="background: linear-gradient(180deg, #d4ac0d, #b7950b); height: 90px;">
+                    <div style="position:absolute; inset:0; background: repeating-radial-gradient(circle at 30% 40%, rgba(255,255,255,0.1) 0 5px, transparent 5px 15px); border-radius: inherit;"></div>
+                </div>
+                <div class="prop" style="bottom: 65px; right: -20px; font-size: 1.5rem; animation-delay: 0.3s;">🎮</div>
+            </div>
+            <div class="guy-label">ABHINAV</div>
+        </div>
+
+        <!-- GUY 3 - SUYASH (RED SHIRT CENTER, cards in hand) -->
+        <div class="guy" style="z-index: 5; transform: scale(1.08);">
+            <div class="tooltip">SUYASH<br><span style="color:#ff4d00;">The Main Event 🤴</span><br>Plays cards AND life on easy mode.</div>
+            <div class="guy-body" style="width: 110px;">
+                <div class="face" style="background: radial-gradient(circle at 40% 35%, #f5c070, #d4943a); width: 65px; height: 70px;">
+                    <div class="hair-base" style="background: #111; width: 75px;"></div>
+                    <div class="eye left"></div>
+                    <div class="eye right"></div>
+                    <div class="smile"></div>
+                </div>
+                <div class="shirt" style="background: linear-gradient(180deg, #c0392b, #922b21); width: 90px; height: 95px;"></div>
+                <!-- Cards in hand -->
+                <div class="prop" style="bottom: 65px; right: -25px; font-size: 1.8rem; animation-delay: 0.5s;">🃏</div>
+            </div>
+            <div class="guy-label">SUYASH</div>
+        </div>
+
+        <!-- GUY 4 - BARDE (dark blue shirt, holding shot glass up) -->
+        <div class="guy" style="z-index: 4;">
+            <div class="tooltip">BARDE<br><span style="color:#ff4d00;">Silent Closer 🎯</span><br>Says once. Burns forever.</div>
+            <div class="guy-body">
+                <div class="face" style="background: radial-gradient(circle at 40% 35%, #f5c070, #d4943a);">
+                    <div class="hair-base" style="background: #0d0801;"></div>
+                    <div class="eye left"></div>
+                    <div class="eye right"></div>
+                    <div style="position:absolute; bottom: 14px; left: 50%; transform: translateX(-50%); font-size: 1.2rem;">😄</div>
+                </div>
+                <div class="shirt" style="background: linear-gradient(180deg, #1a2a4a, #0d1a2e);"></div>
+                <div class="prop" style="bottom: 80px; left: -10px; font-size: 1.4rem; animation-delay: 0.8s;">🥃</div>
+            </div>
+            <div class="guy-label">BARDE</div>
+        </div>
+
+        <!-- GUY 5 - ABHIJEET (bottle in hand, laughing) -->
+        <div class="guy" style="z-index: 3;">
+            <div class="tooltip">ABHIJEET<br><span style="color:#ff4d00;">Drama King 🎭</span><br>Laughing about his own losses.</div>
+            <div class="guy-body">
+                <div class="face" style="background: radial-gradient(circle at 40% 35%, #f5c070, #d4943a);">
+                    <div class="hair-base" style="background: #150c00; border-radius: 60% 40% 0 0;"></div>
+                    <div class="eye left"></div>
+                    <div class="eye right"></div>
+                    <div style="position:absolute; bottom: 12px; left: 50%; transform: translateX(-50%); font-size: 1.4rem;">😂</div>
+                </div>
+                <div class="shirt" style="background: linear-gradient(180deg, #3498db, #2471a3);"></div>
+                <div class="prop" style="bottom: 60px; right: -20px; font-size: 1.6rem; animation-delay: 1s;">🍾</div>
+            </div>
+            <div class="guy-label">ABHIJEET</div>
+        </div>
+
+        <!-- GUY 6 - SHREYASH (light blue, bracelets, glasses) -->
+        <div class="guy" style="z-index: 2;">
+            <div class="tooltip">SHREYASH<br><span style="color:#ff4d00;">Strategist 🧠</span><br>1000 IQ plans. 0 IQ execution.</div>
+            <div class="guy-body">
+                <div class="face" style="background: radial-gradient(circle at 40% 35%, #f5c070, #d4943a);">
+                    <div class="hair-base" style="background: #2c1a05; border-radius: 50% 60% 0 0;"></div>
+                    <div class="glasses"></div>
+                    <div class="eye left"></div>
+                    <div class="eye right"></div>
+                    <div style="position:absolute; bottom: 12px; left: 50%; transform: translateX(-50%); font-size: 1.3rem;">😁</div>
+                </div>
+                <div class="shirt" style="background: linear-gradient(180deg, #7fb3d3, #5499bb);"></div>
+                <div class="prop" style="bottom: 60px; left: -15px; font-size: 1.4rem; animation-delay: 0.2s;">🥃</div>
+            </div>
+            <div class="guy-label">SHREYASH</div>
+        </div>
+
+    </div>
+
+    <!-- POOL TABLE (bottom left) -->
+    <div class="pool-area">
+        <div class="pool-table">
+            <!-- Pockets -->
+            <div class="pocket" style="top: -8px; left: -8px;"></div>
+            <div class="pocket" style="top: -8px; right: -8px;"></div>
+            <div class="pocket" style="bottom: -8px; left: -8px;"></div>
+            <div class="pocket" style="bottom: -8px; right: -8px;"></div>
+            <div class="pocket" style="top: 48%; left: -8px;"></div>
+            <div class="pocket" style="top: 48%; right: -8px;"></div>
+
+            <!-- Balls -->
+            <div class="pball" style="background:radial-gradient(circle at 35% 35%, #fff, #ddd); left:80px; top:60px;">
+            </div>
+            <div class="pball" style="background:radial-gradient(circle at 35% 35%, #444, #000); left:120px; top:90px;">8</div>
+            <div class="pball" style="background:radial-gradient(circle at 35% 35%, #e74c3c, #c0392b); left:160px; top:60px;"></div>
+            <div class="pball" style="background:radial-gradient(circle at 35% 35%, #f1c40f, #d4ac0d); left:200px; top:90px;"></div>
+            <div class="pball" style="background:radial-gradient(circle at 35% 35%, #3498db, #2471a3); left:140px; top:130px;"></div>
+            <div class="pball" style="background:radial-gradient(circle at 35% 35%, #9b59b6, #7d3c98); left:180px; top:130px;"></div>
+        </div>
+        <div class="pool-cue"></div>
+    </div>
+
+</div>
+
+<script>
+    const cursor = document.getElementById('cursor');
+    const dot = document.getElementById('cursor-dot');
+    document.addEventListener('mousemove', (e) => {
+        cursor.style.left = e.clientX - 8 + 'px';
+        cursor.style.top = e.clientY - 8 + 'px';
+        dot.style.left = e.clientX - 3 + 'px';
+        dot.style.top = e.clientY - 3 + 'px';
+    });
+
+    // Cursor grow on hover
+    document.querySelectorAll('.guy').forEach(g => {
+        g.addEventListener('mouseenter', () => cursor.style.transform = 'scale(3)');
+        g.addEventListener('mouseleave', () => cursor.style.transform = 'scale(1)');
+    });
+</script>
+
+</body>
+</html>
